@@ -1,0 +1,7 @@
+auctions:
+  - auction:
+      quantity: 200000
+
+
+bidderOne:
+  strategy: silly
