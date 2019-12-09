@@ -1,7 +1,17 @@
 auctions:
   - auction:
-      quantity: 200000
-
-
-bidderOne:
-  strategy: silly
+      total-quantity: 200000
+      first-participant:
+        sum: 100000
+        strategy: silly
+      second-participant:
+        sum: 100000
+        strategy: compete
+  - auction:
+      total-quantity: 200000
+      first-participant:
+        sum: 200000
+        strategy: silly
+      second-participant:
+        sum: 200000
+        strategy: compete

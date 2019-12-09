@@ -55,8 +55,8 @@ public class TwoPlayersAuction implements Auction {
             firsParticipantPrize = secondParticipantPrize = 1;
         }
 
-        auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
-        auctionStatistic.apply(secondParticipant, secondParticipantBid, secondParticipantPrize);
+        //auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
+        //auctionStatistic.apply(secondParticipant, secondParticipantBid, secondParticipantPrize);
     }
 
     @Override
