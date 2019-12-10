@@ -2,12 +2,11 @@ package de.optimaxenergy.auction.auction;
 
 import de.optimaxenergy.auction.bidders.Bidder;
 import de.optimaxenergy.auction.validation.Even;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @Getter
 public class TwoPlayersAuction implements Auction {
@@ -22,9 +21,8 @@ public class TwoPlayersAuction implements Auction {
     private final Pair<Integer, Integer> secondParticipantPosition;
     private boolean isAuctionFinished;
 
-    public TwoPlayersAuction(Bidder firstParticipant, int firstParticipantCash, Bidder secondParticipant,
-                             int secondParticipantCash,
-                             int totalQuantity) {
+    public TwoPlayersAuction(Bidder firstParticipant, int firstParticipantCash,
+        Bidder secondParticipant, int secondParticipantCash, int totalQuantity) {
         this.firstParticipant = firstParticipant;
         this.secondParticipant = secondParticipant;
         this.totalQuantity = totalQuantity;
@@ -55,8 +53,8 @@ public class TwoPlayersAuction implements Auction {
             firsParticipantPrize = secondParticipantPrize = 1;
         }
 
-        //auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
-        //auctionStatistic.apply(secondParticipant, secondParticipantBid, secondParticipantPrize);
+        //  auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
+        //  auctionStatistic.apply(secondParticipant, secondParticipantBid, secondParticipantPrize);
     }
 
     @Override

@@ -1,0 +1,15 @@
+auctions:
+  - totalQuantity: 200000
+    firstParticipant:
+      sum: 200000
+      strategy: SILLY
+    secondParticipant:
+      sum: 200000
+      strategy: COMPETE
+  - totalQuantity: 200000
+    firstParticipant:
+      sum: 200000
+      strategy: SILLY
+    secondParticipant:
+      sum: 200000
+      strategy: COMPETE
