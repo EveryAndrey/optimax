@@ -31,13 +31,15 @@ public class TwoPlayersAuction implements Auction {
     }
 
     @Override
-    public void run() {
+    public Auction call() {
         for (int restQuantity = totalQuantity; restQuantity > 0; restQuantity -= 2) {
             int firstParticipantBid = firstParticipant.placeBid();
             int secondParticipantBid = secondParticipant.placeBid();
             spreadTheResult(firstParticipantBid, secondParticipantBid);
         }
         isAuctionFinished = true;
+
+        return this;
     }
 
     private void spreadTheResult(int firstParticipantBid, int secondParticipantBid) {
@@ -52,18 +54,13 @@ public class TwoPlayersAuction implements Auction {
         } else {
             firsParticipantPrize = secondParticipantPrize = 1;
         }
-
-        //  auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
+        //auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
         //  auctionStatistic.apply(secondParticipant, secondParticipantBid, secondParticipantPrize);
-    }
-
-    @Override
-    public Bidder getWinner() {
-        return null;
     }
 
     @Override
     public String getReport() {
         return null;
     }
+
 }

@@ -1,9 +1,7 @@
 package de.optimaxenergy.auction.auction;
 
-import de.optimaxenergy.auction.bidders.Bidder;
+import java.util.concurrent.Callable;
 
-public interface Auction extends Runnable {
-    Bidder getWinner();
-
+public interface Auction extends Callable<Auction> {
     String getReport();
 }

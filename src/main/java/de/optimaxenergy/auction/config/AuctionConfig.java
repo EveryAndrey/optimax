@@ -8,6 +8,11 @@ import de.optimaxenergy.auction.bidders.StrategyKind;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -16,11 +21,13 @@ import org.yaml.snakeyaml.constructor.Constructor;
 public class AuctionConfig {
 
   @Getter
-  @Setter
   private List<Auction> auctions;
+
+  private final Validator validator;
 
   public AuctionConfig() {
     this.auctions = new ArrayList<>();
+    this.validator = Validation.buildDefaultValidatorFactory().getValidator();
   }
 
   public AuctionConfig init() {
@@ -45,6 +52,11 @@ public class AuctionConfig {
 
     Auction auction = new TwoPlayersAuction(firstParticipant, item.getFirstParticipant().getSum(),
         secondParticipant, item.getSecondParticipant().getSum(), item.getTotalQuantity());
+    Set<ConstraintViolation<Auction>> validateSet = validator.validate(auction);
+    if (!validateSet.isEmpty()) {
+      throw new ValidationException("Auction isn't valid!");
+    }
+
     return auction;
   }
 

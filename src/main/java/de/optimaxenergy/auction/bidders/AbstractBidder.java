@@ -1,23 +1,23 @@
 package de.optimaxenergy.auction.bidders;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
-
 public abstract class AbstractBidder implements Bidder {
 
-    protected final Queue<Pair<Integer, Integer>> bidsHistory;
+    private final Queue<Pair<Integer, Integer>> bidsHistory;
     @Getter
     protected int quantity;
     @Getter
     protected int cash;
-    protected int restCash;
-    protected int acquiredQuantity;
+    private int restCash;
+    @Getter
+    private int acquiredQuantity;
 
-    public AbstractBidder() {
+    AbstractBidder() {
         bidsHistory = new ArrayDeque<>();
     }
 
