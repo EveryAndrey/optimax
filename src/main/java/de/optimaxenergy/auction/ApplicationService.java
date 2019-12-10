@@ -9,7 +9,6 @@ public class ApplicationService {
         AuctionHolder auctionHolder = new AuctionHolder((new AuctionConfig()).init().getAuctions());
         Thread auctionHolderThread = new Thread(auctionHolder::hold);
         auctionHolderThread.start();
-        Thread.yield();
         auctionHolderThread.join();
     }
 

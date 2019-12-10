@@ -2,11 +2,11 @@ package de.optimaxenergy.auction.auction;
 
 import de.optimaxenergy.auction.bidders.Bidder;
 import de.optimaxenergy.auction.validation.Even;
+import lombok.Getter;
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import lombok.Getter;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 @Getter
 public class TwoPlayersAuction implements Auction {
@@ -17,8 +17,9 @@ public class TwoPlayersAuction implements Auction {
     @Positive
     @Even
     private final int totalQuantity;
-    private final Pair<Integer, Integer> firstParticipantPosition;
-    private final Pair<Integer, Integer> secondParticipantPosition;
+
+    private final MutablePair<Integer, Integer> firstParticipantPosition;
+    private final MutablePair<Integer, Integer> secondParticipantPosition;
     private boolean isAuctionFinished;
 
     public TwoPlayersAuction(Bidder firstParticipant, int firstParticipantCash,
@@ -26,8 +27,36 @@ public class TwoPlayersAuction implements Auction {
         this.firstParticipant = firstParticipant;
         this.secondParticipant = secondParticipant;
         this.totalQuantity = totalQuantity;
-        firstParticipantPosition = new ImmutablePair<>(firstParticipantCash, 0);
-        secondParticipantPosition = new ImmutablePair<>(secondParticipantCash, 0);
+        firstParticipantPosition = new MutablePair<>(firstParticipantCash, 0);
+        secondParticipantPosition = new MutablePair<>(secondParticipantCash, 0);
+    }
+
+    @Override
+    public String getReport() {
+        StringBuilder sb = new StringBuilder(String.format("Auction on {%s} quantities between ({%s}) vs ({%s}): ",
+                totalQuantity, firstParticipant, secondParticipant))
+                .append(System.lineSeparator());
+        int wonSide = 0;
+        wonSide = secondParticipantPosition.getRight().compareTo(firstParticipantPosition.getRight());
+        if (wonSide == 0) {
+            wonSide = secondParticipantPosition.getLeft().compareTo(firstParticipantPosition.getLeft());
+        }
+
+        if (wonSide == -1) {
+            sb.append("The first player's won ");
+        } else if (wonSide == 1) {
+            sb.append("The second player's won ");
+        } else {
+            sb.append("The auction has finished in a draw ");
+        }
+
+        sb.append(System.lineSeparator()).append(String.format("with the results: %s quantities against %s " +
+                "quantities, ", firstParticipantPosition.getRight(), secondParticipantPosition.getRight()))
+                .append(System.lineSeparator())
+                .append(String.format("%s cash against %s cash", firstParticipantPosition.getLeft(),
+                        secondParticipantPosition.getLeft()));
+
+        return sb.toString();
     }
 
     @Override
@@ -38,29 +67,30 @@ public class TwoPlayersAuction implements Auction {
             spreadTheResult(firstParticipantBid, secondParticipantBid);
         }
         isAuctionFinished = true;
-
         return this;
     }
 
     private void spreadTheResult(int firstParticipantBid, int secondParticipantBid) {
         firstParticipant.bids(firstParticipantBid, secondParticipantBid);
         secondParticipant.bids(secondParticipantBid, firstParticipantBid);
-        int firsParticipantPrize;
-        int secondParticipantPrize;
+        int firstParticipantPrize = 0;
+        int secondParticipantPrize = 0;
         if (firstParticipantBid > secondParticipantBid) {
-            firsParticipantPrize = 2;
+            firstParticipantPrize = 2;
         } else if (firstParticipantBid < secondParticipantBid) {
             secondParticipantPrize = 2;
         } else {
-            firsParticipantPrize = secondParticipantPrize = 1;
+            firstParticipantPrize = secondParticipantPrize = 1;
         }
-        //auctionStatistic.apply(firstParticipant, firstParticipantBid, firsParticipantPrize);
-        //  auctionStatistic.apply(secondParticipant, secondParticipantBid, secondParticipantPrize);
+
+        apply(firstParticipantPosition, firstParticipantBid, firstParticipantPrize);
+        apply(secondParticipantPosition, secondParticipantBid, secondParticipantPrize);
     }
 
-    @Override
-    public String getReport() {
-        return null;
+    private void apply(MutablePair<Integer, Integer> position, int bid, int prize) {
+        position.setLeft(position.getLeft() - bid);
+        position.setRight(position.getRight() + prize);
     }
+
 
 }

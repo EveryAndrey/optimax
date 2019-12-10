@@ -1,6 +1,7 @@
 package de.optimaxenergy.auction.service;
 
 import de.optimaxenergy.auction.auction.Auction;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -19,24 +20,44 @@ public class AuctionHolder {
   public void hold() {
 
     List<Future<Auction>> futures = new ArrayList<>();
-
-    auctions.forEach(auction -> {
       ExecutorService executorService = Executors.newFixedThreadPool(6);
-      futures.add(executorService.submit(auction));
-      System.out.println(auction.getReport());
-    });
 
-    while (futures.stream().anyMatch(auctionFuture -> !auctionFuture.isDone()
-        && !auctionFuture.isCancelled())) {
-      futures.stream().filter(Future::isDone)
-          .forEach(auctionFuture -> {
-            try {
-              System.out
-                  .println(auctionFuture.get().getReport());
-            } catch (InterruptedException | ExecutionException e) {
-              e.printStackTrace();
-            }
+      try {
+          auctions.forEach(auction -> {
+              futures.add(executorService.submit(auction));
           });
+
+          while (futures.stream().anyMatch(auctionFuture -> !auctionFuture.isDone()
+                  && !auctionFuture.isCancelled())) {
+              futures.stream().filter(Future::isDone)
+                      .forEach(auctionFuture -> {
+                          try {
+                              System.out.println(auctionFuture.get().getReport() + System.lineSeparator());
+                              futures.remove(auctionFuture);
+                          } catch (InterruptedException | ExecutionException e) {
+                              e.printStackTrace();
+                          }
+                      });
+          }
+
+          futures.stream().filter(Future::isDone)
+                  .forEach(auctionFuture -> {
+                      try {
+                          System.out
+                                  .println(auctionFuture.get().getReport() + System.lineSeparator());
+                          futures.remove(auctionFuture);
+                      } catch (InterruptedException | ExecutionException e) {
+                          e.printStackTrace();
+                      }
+                  });
+
+      } finally {
+          executorService.shutdownNow();
     }
   }
+
+    private static interface ParamRunnable {
+        void call(List<Future<Auction>> list, Future<Auction> future)
+    }
+
 }
