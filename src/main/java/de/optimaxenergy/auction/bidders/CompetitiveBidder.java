@@ -10,6 +10,6 @@ public class CompetitiveBidder extends AbstractBidder {
 
     @Override
     public String toString() {
-        return String.format("{%s}:{%s}", StrategyKind.COMPETE.name(), cash);
+      return String.format("%s:%s", StrategyKind.COMPETE.name(), cash);
     }
 }

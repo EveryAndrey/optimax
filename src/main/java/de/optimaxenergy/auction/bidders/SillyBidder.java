@@ -12,6 +12,6 @@ public class SillyBidder extends AbstractBidder {
 
     @Override
     public String toString() {
-        return String.format("{%s}:{%s}", StrategyKind.SILLY.name(), cash);
+        return String.format("%s:%s", StrategyKind.SILLY.name(), cash);
     }
 }

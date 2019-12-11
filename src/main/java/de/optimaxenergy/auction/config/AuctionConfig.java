@@ -54,6 +54,8 @@ public class AuctionConfig {
         secondParticipant, item.getSecondParticipant().getSum(), item.getTotalQuantity());
     Set<ConstraintViolation<Auction>> validateSet = validator.validate(auction);
     if (!validateSet.isEmpty()) {
+      validateSet.forEach(auctionConstraintViolation ->
+          System.out.println(auctionConstraintViolation.getMessage()));
       throw new ValidationException("Auction isn't valid!");
     }
 

@@ -6,3 +6,10 @@ auctions:
     secondParticipant:
       sum: 100
       strategy: COMPETE
+  - totalQuantity: 100
+    firstParticipant:
+      sum: 100
+      strategy: COMPETE
+    secondParticipant:
+      sum: 100
+      strategy: COMPETE
