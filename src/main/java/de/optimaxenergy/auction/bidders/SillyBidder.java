@@ -5,9 +5,13 @@ import java.util.Random;
 @Strategy(StrategyKind.SILLY)
 public class SillyBidder extends AbstractBidder {
 
+    private int bidderCount = 0;
+
     @Override
     protected int getBid() {
-        return new Random().nextInt(restCash);
+        int bid = new Random().nextInt((quantity - bidderCount) / restCash + 1);
+        bidderCount += 2;
+        return bid;
     }
 
     @Override
