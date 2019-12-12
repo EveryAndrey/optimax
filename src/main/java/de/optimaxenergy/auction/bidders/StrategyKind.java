@@ -1,5 +1,5 @@
 package de.optimaxenergy.auction.bidders;
 
 public enum StrategyKind {
-  SILLY, COMPETE
+  SILLY, COMPETE, AGGRESSIVE_COMPETE, COWARD
 }

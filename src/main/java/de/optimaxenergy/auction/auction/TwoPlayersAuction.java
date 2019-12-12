@@ -70,6 +70,9 @@ public class TwoPlayersAuction implements Auction {
     for (int restQuantity = totalQuantity; restQuantity > 0; restQuantity -= 2) {
       int firstParticipantBid = firstParticipant.placeBid();
       int secondParticipantBid = secondParticipant.placeBid();
+      System.out.println(String.format("First player's bid against second player's bid: [%s] [%s]",
+          firstParticipantBid, secondParticipantBid));
+
       spreadTheResult(firstParticipantBid, secondParticipantBid);
     }
     isAuctionFinished = true;

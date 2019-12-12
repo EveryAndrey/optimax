@@ -1,15 +1,15 @@
 auctions:
   - totalQuantity: 100
     firstParticipant:
-      sum: 100
-      strategy: SILLY
-    secondParticipant:
-      sum: 100
+      sum: 10000
       strategy: COMPETE
+    secondParticipant:
+      sum: 10000
+      strategy: AGGRESSIVE_COMPETE
   - totalQuantity: 100
     firstParticipant:
-      sum: 100
+      sum: 10000
       strategy: COMPETE
     secondParticipant:
-      sum: 100
-      strategy: COMPETE
+      sum: 10000
+      strategy: AGGRESSIVE_COMPETE
