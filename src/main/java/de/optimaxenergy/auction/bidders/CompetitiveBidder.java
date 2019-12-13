@@ -1,8 +1,5 @@
 package de.optimaxenergy.auction.bidders;
 
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,7 +7,8 @@ import org.apache.commons.lang3.tuple.Pair;
 @Strategy(StrategyKind.COMPETE)
 public class CompetitiveBidder extends AbstractBidder {
 
-  protected static final int ANALYZE_DEEP = 5;
+  protected static final int SLIDING_PRICE_DEEP = 5;
+  protected static final int ZERO_STRATEGY_IDENTIFY = 2;
   protected static final int NOT_ENOUGH_STATISTIC = -1;
 
   protected int winAmount = 0;
@@ -18,65 +16,94 @@ public class CompetitiveBidder extends AbstractBidder {
 
   @Override
   protected void onInit() {
-    winAmount = quantity / 2 + 1;
+    winAmount = getQuantity() / MAX_PRIZE + 1;
     computeReasonablePrice();
   }
 
   protected void computeReasonablePrice() {
     reasonablePrice = (winAmount - getAcquiredQuantity()) <= 0
         ? 0
-        : Math.floorDiv(restCash, winAmount - getAcquiredQuantity());
+        : (int) Math.ceil((double) getRestCash() / (winAmount - getAcquiredQuantity()));
   }
 
   @Override
   protected int getBid() {
     computeReasonablePrice();
 
-    if (getAcquiredQuantity() - getOpponentAcquiredQuantity() > MAX_PRIZE) {
+    if (isReasonableToSpareMoney()) {
       return 0;
+    }
+
+    if (cantLooseAnymore()) {
+      return MAX_PRIZE * reasonablePrice;
+    }
+
+    if (isTheLastStep() && getAcquiredQuantity() - getOpponentAcquiredQuantity() <= 0) {
+      return getRestCash();
     }
 
     int predictableBid = getPredictableBid();
 
-    if (predictableBid > reasonablePrice) {
-      return 0;
-    } else {
-      return reasonablePrice;
+    if (predictableBid == NOT_ENOUGH_STATISTIC) {
+      return MAX_PRIZE * reasonablePrice;
     }
 
+    if (predictableBid > MAX_PRIZE * reasonablePrice) {
+      return 0;
+    } else if (predictableBid == 0) {
+      return 1;
+    } else {
+      return Math.min(MAX_PRIZE * reasonablePrice, predictableBid + 1);
+    }
+  }
+
+  private boolean cantLooseAnymore() {
+    return getOpponentAcquiredQuantity() - getAcquiredQuantity() + MAX_PRIZE ==
+        (getQuantity() / 2 - getCurrentStep()) * MAX_PRIZE;
+  }
+
+  private boolean isReasonableToSpareMoney() {
+    return getAcquiredQuantity() - getOpponentAcquiredQuantity() > 2 * MAX_PRIZE;
   }
 
   protected int getPredictableBid() {
 
-    Deque<Pair<Integer, Integer>> bidsHistory = getBidsHistory();
-    if (bidsHistory.size() < ANALYZE_DEEP) {
+    List<Pair<Integer, Integer>> bidsHistory = getBidsHistory();
+    if (bidsHistory.size() < SLIDING_PRICE_DEEP) {
       return NOT_ENOUGH_STATISTIC;
     }
 
-    ArrayDeque<Integer> opponentBids = bidsHistory.stream().map(Pair::getRight).collect(
-        Collectors.toCollection(ArrayDeque::new));
+    List<Integer> opponentBids = bidsHistory.stream().map(Pair::getRight).collect(
+        Collectors.toList());
 
     if (isTheOpponentBankrupt(opponentBids)) {
       return 0;
     }
 
-    List<Integer> lastValuableBids = opponentBids.stream().filter(integer -> integer != 0)
-        .sorted(Comparator.reverseOrder())
-        .limit(ANALYZE_DEEP).collect(Collectors.toList());
+    List<Integer> valuableBids = opponentBids.stream().filter(integer -> integer != 0).collect(
+        Collectors.toList());
 
-    return lastValuableBids.stream().reduce(Integer::sum)
-        .map(integer -> Math.floorDiv(integer, lastValuableBids.size()))
-        .orElse(NOT_ENOUGH_STATISTIC);
+    int sum = 0;
+    int count = 0;
+    for (int i = valuableBids.size() - 1; i >= 0 && valuableBids.size() - i <= SLIDING_PRICE_DEEP;
+        i--) {
+      sum += valuableBids.get(i);
+      count++;
+    }
+    return sum == 0 ? NOT_ENOUGH_STATISTIC : Math.floorDiv(sum, count);
   }
 
-  protected boolean isTheOpponentBankrupt(ArrayDeque<Integer> opponentBids) {
-    opponentBids.descendingIterator().forEachRemaining();
-    return opponentBids.stream().sorted(Comparator.reverseOrder()).limit(ANALYZE_DEEP)
-        .allMatch(integer -> integer == 0);
+  protected boolean isTheOpponentBankrupt(List<Integer> opponentBids) {
+    int sum = 0;
+    for (int i = opponentBids.size() - 1;
+        i >= 0 && opponentBids.size() - i <= ZERO_STRATEGY_IDENTIFY; i--) {
+      sum += opponentBids.get(i);
+    }
+    return sum == 0;
   }
 
   @Override
     public String toString() {
-      return String.format("%s:%s", StrategyKind.COMPETE.name(), cash);
+    return String.format("%s:%s", StrategyKind.COMPETE.name(), getCash());
     }
 }

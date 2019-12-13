@@ -1,7 +1,7 @@
 package de.optimaxenergy.auction.bidders;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -11,19 +11,20 @@ public abstract class AbstractBidder implements Bidder {
 
     static int MAX_PRIZE = 2;
 
-    private final Deque<Pair<Integer, Integer>> bidsHistory;
-    protected int quantity;
-    protected int cash;
-    protected int restCash;
+    private final List<Pair<Integer, Integer>> bidsHistory;
+    private int quantity;
+    private int cash;
+    private int restCash;
     private int acquiredQuantity;
     private int opponentAcquiredQuantity;
+    private int currentStep;
 
     AbstractBidder() {
-        bidsHistory = new ArrayDeque<>();
+        bidsHistory = new ArrayList<>();
     }
 
-    public Deque<Pair<Integer, Integer>> getBidsHistory() {
-        return new ArrayDeque<>(bidsHistory);
+    public List<Pair<Integer, Integer>> getBidsHistory() {
+        return new ArrayList<>(bidsHistory);
     }
 
     @Override
@@ -34,10 +35,15 @@ public abstract class AbstractBidder implements Bidder {
         bidsHistory.clear();
         acquiredQuantity = 0;
         opponentAcquiredQuantity = 0;
+        currentStep = 0;
         onInit();
     }
 
     protected abstract void onInit();
+
+    protected boolean isTheLastStep() {
+        return quantity / 2 == currentStep + 1;
+    }
 
     @Override
     public final int placeBid() {
@@ -45,8 +51,9 @@ public abstract class AbstractBidder implements Bidder {
             return 0;
         }
 
-        int bid = Math.min(getBid(), restCash);
+        int bid = Math.min(Math.max(getBid(), 0), restCash);
         restCash -= bid;
+        currentStep++;
         return bid;
     }
 

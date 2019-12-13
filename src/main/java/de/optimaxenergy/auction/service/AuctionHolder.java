@@ -20,7 +20,7 @@ public class AuctionHolder {
   public void hold() {
 
     List<Future<Auction>> futures = new ArrayList<>();
-    ExecutorService executorService = Executors.newFixedThreadPool(6);
+    ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     try {
       auctions.forEach(auction -> futures.add(executorService.submit(auction)));
