@@ -58,14 +58,7 @@ public abstract class AbstractBidder implements Bidder {
   @Override
   public final int placeBid() {
     beforePlaceBid();
-    if (restCash == 0) {
-      return 0;
-    }
-
-    int bid = Math.min(Math.max(getBid(), 0), restCash);
-    restCash -= bid;
-    currentStep++;
-    return bid;
+    return restCash == 0 ? 0 : Math.min(Math.max(getBid(), 0), restCash);
   }
 
   protected void beforePlaceBid() {
@@ -95,6 +88,8 @@ public abstract class AbstractBidder implements Bidder {
 
   @Override
   public void bids(int own, int other) {
+    restCash -= own;
+    currentStep++;
     bidsHistory.add(new ImmutablePair<>(own, other));
     int prizeAmount;
     if (own > other) {

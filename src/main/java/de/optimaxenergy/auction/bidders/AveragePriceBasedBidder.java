@@ -9,9 +9,9 @@ import org.apache.commons.lang3.tuple.Pair;
 @Strategy(StrategyKind.AVERAGE_PRICE_BASED)
 public final class AveragePriceBasedBidder extends AbstractBidder {
 
-  private static final int SLIDING_PRICE_DEEP = 5;
-  private static final int ZERO_STRATEGY_IDENTIFY = 2;
-  private static final int NOT_ENOUGH_STATISTIC = -1;
+  protected static final int SLIDING_PRICE_DEEP = 5;
+  protected static final int ZERO_STRATEGY_IDENTIFY = 2;
+  protected static final int NOT_ENOUGH_STATISTIC = -1;
 
   private int winAmount = 0;
   private int reasonablePrice = 0;
@@ -39,27 +39,27 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
   }
 
 
-  private Optional<Integer> spareMoneyCondition() {
+  protected Optional<Integer> spareMoneyCondition() {
     return (getAcquiredQuantity() - getOpponentAcquiredQuantity() > 2 * MAX_PRIZE)
         ? Optional.of(0)
         : Optional.empty();
   }
 
-  private Optional<Integer> cantLooseCondition() {
+  protected Optional<Integer> cantLooseCondition() {
 
-    return getOpponentAcquiredQuantity() - getAcquiredQuantity() + MAX_PRIZE ==
+    return getOpponentAcquiredQuantity() - getAcquiredQuantity() ==
         (getQuantity() / 2 - getCurrentStep()) * MAX_PRIZE
         ? Optional.of(MAX_PRIZE * reasonablePrice)
         : Optional.empty();
   }
 
-  private Optional<Integer> allInCondition() {
+  protected Optional<Integer> allInCondition() {
     return isTheLastStep() && getAcquiredQuantity() - getOpponentAcquiredQuantity() <= 0
         ? Optional.of(getRestCash())
         : Optional.empty();
   }
 
-  private Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
+  protected Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
     List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
         Collectors.toList());
     if (opponentBids.size() < zeroStrategyIdentify) {
@@ -75,7 +75,7 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
     return sum == 0 ? Optional.of(1) : Optional.empty();
   }
 
-  private Optional<Integer> averagePriceBasedCondition() {
+  protected Optional<Integer> averagePriceBasedCondition() {
     List<Pair<Integer, Integer>> bidsHistory = getBidsHistory();
 
     if (bidsHistory.size() < SLIDING_PRICE_DEEP) {
@@ -87,8 +87,6 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
 
     if (predictableBid > MAX_PRIZE * reasonablePrice) {
       return Optional.of(0);
-    } else if (predictableBid == 0) {
-      return Optional.of(1);
     } else {
       return Optional.of(MAX_PRIZE * reasonablePrice);
     }
