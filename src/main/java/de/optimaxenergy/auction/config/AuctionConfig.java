@@ -34,7 +34,7 @@ public class AuctionConfig {
     Yaml yaml = new Yaml(new Constructor(AuctionList.class));
     InputStream inputStream = this.getClass()
         .getClassLoader()
-        .getResourceAsStream("application.yaml");
+        .getResourceAsStream("application.yml");
 
     AuctionList auctionList = yaml.load(inputStream);
     auctions.clear();

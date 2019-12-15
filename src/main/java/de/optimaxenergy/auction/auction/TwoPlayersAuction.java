@@ -44,9 +44,9 @@ public class TwoPlayersAuction implements Auction {
           .compareTo(firstParticipantPosition.getLeft());
     }
 
-    if (wonSide == -1) {
+    if (wonSide < 0) {
       sb.append("The first player's won ");
-    } else if (wonSide == 1) {
+    } else if (wonSide > 0) {
       sb.append("The second player's won ");
     } else {
       sb.append("The auction has finished in a draw ");
@@ -71,6 +71,11 @@ public class TwoPlayersAuction implements Auction {
       int firstParticipantBid = firstParticipant.placeBid();
       int secondParticipantBid = secondParticipant.placeBid();
       spreadTheResult(firstParticipantBid, secondParticipantBid);
+      System.out.println(String.format("First player's bid against second player's bid: [%s] [%s], "
+              + "current score: [%s] vs [%s]",
+          firstParticipantBid, secondParticipantBid, firstParticipantPosition.getRight(),
+          secondParticipantPosition.getRight()));
+
     }
     isAuctionFinished = true;
     return this;
