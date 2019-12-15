@@ -116,5 +116,4 @@ public class TwoPlayersAuction implements Auction {
     position.setRight(position.getRight() + prize);
   }
 
-
 }
