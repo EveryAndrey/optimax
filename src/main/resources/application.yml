@@ -1,8 +1,22 @@
 auctions:
-  - totalQuantity: 50
+  - totalQuantity: 100
     firstParticipant:
       sum: 10000
-      strategy: COMPETE
+      strategy: AVERAGE_PRICE_BASED
+    secondParticipant:
+      sum: 10000
+      strategy: CONTRA_AVERAGE_PRICE
+  - totalQuantity: 100
+    firstParticipant:
+      sum: 10000
+      strategy: AVERAGE_PRICE_BASED
+    secondParticipant:
+      sum: 10000
+      strategy: RANDOM
+  - totalQuantity: 100
+    firstParticipant:
+      sum: 10000
+      strategy: CONTRA_AVERAGE_PRICE
     secondParticipant:
       sum: 10000
       strategy: RANDOM

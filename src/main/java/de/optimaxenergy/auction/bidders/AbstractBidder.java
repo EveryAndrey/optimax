@@ -71,8 +71,6 @@ public abstract class AbstractBidder implements Bidder {
   protected void beforePlaceBid() {
   }
 
-  ;
-
   private int getBid() {
     for (var optionalCallable : conditions) {
       try {

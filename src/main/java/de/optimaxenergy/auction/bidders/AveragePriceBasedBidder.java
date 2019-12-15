@@ -5,10 +5,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Strategy(StrategyKind.AGGRESSIVE_COMPETE)
-public class AggressiveCompetitiveBidder extends AbstractBidder {
+@SuppressWarnings("Duplicates")
+@Strategy(StrategyKind.AVERAGE_PRICE_BASED)
+public final class AveragePriceBasedBidder extends AbstractBidder {
 
   private static final int SLIDING_PRICE_DEEP = 5;
+  private static final int ZERO_STRATEGY_IDENTIFY = 2;
   private static final int NOT_ENOUGH_STATISTIC = -1;
 
   private int winAmount = 0;
@@ -16,11 +18,13 @@ public class AggressiveCompetitiveBidder extends AbstractBidder {
 
   @Override
   protected void afterInit() {
-    winAmount = getQuantity() / 2 + 1;
+    winAmount = getQuantity() / MAX_PRIZE + 1;
     computeReasonablePrice();
     addCondition(this::spareMoneyCondition);
+    addCondition(this::cantLooseCondition);
+    addCondition(this::allInCondition);
+    addCondition(() -> zeroCheckCondition(ZERO_STRATEGY_IDENTIFY));
     addCondition(this::averagePriceBasedCondition);
-
   }
 
   @Override
@@ -28,17 +32,47 @@ public class AggressiveCompetitiveBidder extends AbstractBidder {
     computeReasonablePrice();
   }
 
-
-  void computeReasonablePrice() {
+  private void computeReasonablePrice() {
     reasonablePrice = (winAmount - getAcquiredQuantity()) <= 0
         ? 0
-        : (int) Math.ceil((double) getRestCash() / (winAmount - getAcquiredQuantity()));
+        : Math.floorDiv(getRestCash(), (winAmount - getAcquiredQuantity()));
   }
 
+
   private Optional<Integer> spareMoneyCondition() {
-    return (getAcquiredQuantity() - getOpponentAcquiredQuantity() > MAX_PRIZE)
+    return (getAcquiredQuantity() - getOpponentAcquiredQuantity() > 2 * MAX_PRIZE)
         ? Optional.of(0)
         : Optional.empty();
+  }
+
+  private Optional<Integer> cantLooseCondition() {
+
+    return getOpponentAcquiredQuantity() - getAcquiredQuantity() + MAX_PRIZE ==
+        (getQuantity() / 2 - getCurrentStep()) * MAX_PRIZE
+        ? Optional.of(MAX_PRIZE * reasonablePrice)
+        : Optional.empty();
+  }
+
+  private Optional<Integer> allInCondition() {
+    return isTheLastStep() && getAcquiredQuantity() - getOpponentAcquiredQuantity() <= 0
+        ? Optional.of(getRestCash())
+        : Optional.empty();
+  }
+
+  private Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
+    List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
+        Collectors.toList());
+    if (opponentBids.size() < zeroStrategyIdentify) {
+      return Optional.empty();
+    }
+
+    int sum = 0;
+    for (int i = opponentBids.size() - 1;
+        i >= 0 && opponentBids.size() - i <= zeroStrategyIdentify; i--) {
+      sum += opponentBids.get(i);
+    }
+
+    return sum == 0 ? Optional.of(1) : Optional.empty();
   }
 
   private Optional<Integer> averagePriceBasedCondition() {
@@ -76,6 +110,6 @@ public class AggressiveCompetitiveBidder extends AbstractBidder {
 
   @Override
   public String toString() {
-    return String.format("%s:%s", StrategyKind.AGGRESSIVE_COMPETE.name(), getCash());
+    return String.format("%s:%s", StrategyKind.AVERAGE_PRICE_BASED.name(), getCash());
   }
 }

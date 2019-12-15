@@ -1,6 +1,7 @@
 package de.optimaxenergy.auction.auction;
 
 import de.optimaxenergy.auction.bidders.Bidder;
+import de.optimaxenergy.auction.exceptions.InvalidAuctionBehavior;
 import de.optimaxenergy.auction.validation.Even;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -17,6 +18,7 @@ public class TwoPlayersAuction implements Auction {
   @Positive
   @Even
   private final int totalQuantity;
+  private final StringBuilder auctionHistory;
 
   private final MutablePair<Integer, Integer> firstParticipantPosition;
   private final MutablePair<Integer, Integer> secondParticipantPosition;
@@ -29,10 +31,16 @@ public class TwoPlayersAuction implements Auction {
     this.totalQuantity = totalQuantity;
     firstParticipantPosition = new MutablePair<>(firstParticipantCash, 0);
     secondParticipantPosition = new MutablePair<>(secondParticipantCash, 0);
+    auctionHistory = new StringBuilder();
   }
 
   @Override
-  public String getReport() {
+  public String getReport(boolean withHistory) {
+
+    if (withHistory) {
+      System.out.println(auctionHistory.toString());
+    }
+
     StringBuilder sb = new StringBuilder(
         String.format("Auction on %s quantities between (%s) vs (%s): ",
             totalQuantity, firstParticipant, secondParticipant))
@@ -67,15 +75,20 @@ public class TwoPlayersAuction implements Auction {
 
   @Override
   public Auction call() {
+    if (isAuctionFinished) {
+      throw new InvalidAuctionBehavior("Auction's already finished!");
+    }
+
     for (int restQuantity = totalQuantity; restQuantity > 0; restQuantity -= 2) {
       int firstParticipantBid = firstParticipant.placeBid();
       int secondParticipantBid = secondParticipant.placeBid();
       spreadTheResult(firstParticipantBid, secondParticipantBid);
-      System.out.println(String.format("First player's bid against second player's bid: [%s] [%s], "
+      auctionHistory
+          .append(String.format("First player's bid against second player's bid: [%s] [%s], "
               + "current score: [%s] vs [%s]",
           firstParticipantBid, secondParticipantBid, firstParticipantPosition.getRight(),
-          secondParticipantPosition.getRight()));
-
+              secondParticipantPosition.getRight()))
+          .append(System.lineSeparator());
     }
     isAuctionFinished = true;
     return this;
