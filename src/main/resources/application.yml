@@ -5,4 +5,4 @@ auctions:
       strategy: COMPETE
     secondParticipant:
       sum: 10000
-      strategy: AGGRESSIVE_COMPETE
+      strategy: RANDOM
