@@ -44,7 +44,7 @@ public class AuctionHolder {
   private void doProcess(List<Future<Auction>> futures, Future<Auction> auctionFuture) {
     try {
       System.out
-          .println(auctionFuture.get().getReport() + System.lineSeparator());
+          .println(auctionFuture.get().getReport(true) + System.lineSeparator());
       futures.remove(auctionFuture);
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();

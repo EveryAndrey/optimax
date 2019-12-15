@@ -5,8 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Strategy(StrategyKind.COMPETE)
-public final class CompetitiveBidder extends AbstractBidder {
+@Strategy(StrategyKind.AVERAGE_PRICE_BASED)
+public final class AveragePriceBasedBidder extends AbstractBidder {
 
   private static final int SLIDING_PRICE_DEEP = 5;
   private static final int ZERO_STRATEGY_IDENTIFY = 2;
@@ -22,7 +22,7 @@ public final class CompetitiveBidder extends AbstractBidder {
     addCondition(this::spareMoneyCondition);
     addCondition(this::cantLooseCondition);
     addCondition(this::allInCondition);
-    addCondition(this::opponentIsBankrupt);
+    addCondition(() -> zeroCheckCondition(ZERO_STRATEGY_IDENTIFY));
     addCondition(this::averagePriceBasedCondition);
   }
 
@@ -58,16 +58,16 @@ public final class CompetitiveBidder extends AbstractBidder {
         : Optional.empty();
   }
 
-  private Optional<Integer> opponentIsBankrupt() {
+  private Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
     List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
         Collectors.toList());
-    if (opponentBids.size() < ZERO_STRATEGY_IDENTIFY) {
+    if (opponentBids.size() < zeroStrategyIdentify) {
       return Optional.empty();
     }
 
     int sum = 0;
     for (int i = opponentBids.size() - 1;
-        i >= 0 && opponentBids.size() - i <= ZERO_STRATEGY_IDENTIFY; i--) {
+        i >= 0 && opponentBids.size() - i <= zeroStrategyIdentify; i--) {
       sum += opponentBids.get(i);
     }
 
@@ -109,6 +109,6 @@ public final class CompetitiveBidder extends AbstractBidder {
 
   @Override
   public String toString() {
-    return String.format("%s:%s", StrategyKind.COMPETE.name(), getCash());
+    return String.format("%s:%s", StrategyKind.AVERAGE_PRICE_BASED.name(), getCash());
   }
 }
