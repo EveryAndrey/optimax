@@ -1,14 +1,15 @@
 package de.optimaxenergy.auction.bidders;
 
-import static de.optimaxenergy.auction.bidders.StrategyKind.COUNTER_AVERAGE_PRICE;
+import static de.optimaxenergy.auction.bidders.StrategyKind.CONTRA_AVERAGE_PRICE;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
-@Strategy(COUNTER_AVERAGE_PRICE)
-public final class CounterAveragePriceBasedBidder extends AbstractBidder {
+@SuppressWarnings("Duplicates")
+@Strategy(CONTRA_AVERAGE_PRICE)
+public final class ContraAveragePriceBasedBidder extends AbstractBidder {
 
   private static final int ZERO_STRATEGY_IDENTIFY = 2;
   private static final double UPPER_AVERAGE_PRICE_COEFF = 0.2;
@@ -77,7 +78,7 @@ public final class CounterAveragePriceBasedBidder extends AbstractBidder {
 
   @Override
   public String toString() {
-    return String.format("%s:%s", StrategyKind.COUNTER_AVERAGE_PRICE.name(), getCash());
+    return String.format("%s:%s", StrategyKind.CONTRA_AVERAGE_PRICE.name(), getCash());
   }
 
 }

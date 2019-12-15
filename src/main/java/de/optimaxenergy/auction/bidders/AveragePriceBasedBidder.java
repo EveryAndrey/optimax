@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
+@SuppressWarnings("Duplicates")
 @Strategy(StrategyKind.AVERAGE_PRICE_BASED)
 public final class AveragePriceBasedBidder extends AbstractBidder {
 
