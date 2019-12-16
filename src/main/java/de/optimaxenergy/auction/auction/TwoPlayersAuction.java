@@ -8,6 +8,9 @@ import javax.validation.constraints.Positive;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+/**
+ * Auction implementation for two players.
+ */
 @Getter
 public class TwoPlayersAuction implements Auction {
 
@@ -34,6 +37,13 @@ public class TwoPlayersAuction implements Auction {
     auctionHistory = new StringBuilder();
   }
 
+  /**
+   * Get the result of auction represents in text
+   *
+   * @param withHistory - indicate whether it's necessary to add information about moves or not
+   * @return The string value contains the moves (if withHistory flag is true) and the information
+   * about the winner.
+   */
   @Override
   public String getReport(boolean withHistory) {
 
@@ -73,6 +83,10 @@ public class TwoPlayersAuction implements Auction {
     return sb.toString();
   }
 
+  /**
+   * Start the auction. Auction should be started only once.
+   * @return itself after the auction finished
+   */
   @Override
   public Auction call() {
     if (isAuctionFinished) {
@@ -85,8 +99,8 @@ public class TwoPlayersAuction implements Auction {
       spreadTheResult(firstParticipantBid, secondParticipantBid);
       auctionHistory
           .append(String.format("First player's bid against second player's bid: [%s] [%s], "
-              + "current score: [%s] vs [%s]",
-          firstParticipantBid, secondParticipantBid, firstParticipantPosition.getRight(),
+                  + "current score: [%s] vs [%s]",
+              firstParticipantBid, secondParticipantBid, firstParticipantPosition.getRight(),
               secondParticipantPosition.getRight()))
           .append(System.lineSeparator());
     }

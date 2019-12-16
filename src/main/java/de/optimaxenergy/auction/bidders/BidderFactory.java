@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Create bidder instances by strategy. The bidder should have empty constructor.
+ */
 public class BidderFactory {
 
   private static BidderFactory bidderFactory;
@@ -38,6 +41,14 @@ public class BidderFactory {
     return bidderFactory;
   }
 
+  /**
+   * Create instance of bidder by strategyKind param. In order to the bidder could be instantiated,
+   * it should be marked by {@link Strategy} annotation
+   * @param quantity - the initial quantity
+   * @param cash - the initial cash
+   * @param strategyKind - {@link StrategyKind} identifies what strategy should the bidder follows
+   * @return Bidder implementation. In event of bidder not found throws RuntimeException
+   */
   public Bidder createBidder(int quantity, int cash, StrategyKind strategyKind) {
     try {
       Class<?> clazz = Class.forName(bidders.get(strategyKind));

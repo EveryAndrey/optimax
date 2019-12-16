@@ -9,6 +9,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+/**
+ * Responsible for holding auctions.
+ */
 public class AuctionHolder {
 
   private final List<Auction> auctions;
@@ -17,6 +20,9 @@ public class AuctionHolder {
     this.auctions = auctions;
   }
 
+  /**
+   * Launch every auction in list. After auction has finished, print the result.
+   */
   public void hold() {
 
     List<Future<Auction>> futures = new ArrayList<>();

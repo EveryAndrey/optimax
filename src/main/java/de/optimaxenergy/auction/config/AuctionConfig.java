@@ -18,6 +18,9 @@ import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+/**
+ * Application config, responsible for parsing application.yml anc creating list auctions.
+ */
 public class AuctionConfig {
 
   @Getter
