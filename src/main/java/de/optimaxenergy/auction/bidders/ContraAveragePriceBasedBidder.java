@@ -7,6 +7,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Strategy implementation based on contra reasonable price The main idea here is that, when you bid
+ * more than average price, the AveragePriceBasedBidder looses the move that leads to more intensive
+ * decreasing average price for the opponent.
+ */
 @SuppressWarnings("Duplicates")
 @Strategy(CONTRA_AVERAGE_PRICE)
 public final class ContraAveragePriceBasedBidder extends AbstractBidder {
@@ -24,6 +29,11 @@ public final class ContraAveragePriceBasedBidder extends AbstractBidder {
 
   }
 
+  /**
+   * Check whether the opponent bankrupt or saving money.
+   *
+   * @return Optional with the 1 if opponent bid 0 last N moves, Optional.empty - otherwise
+   */
   private Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
     List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
         Collectors.toList());
@@ -40,6 +50,12 @@ public final class ContraAveragePriceBasedBidder extends AbstractBidder {
     return sum == 0 ? Optional.of(1) : Optional.empty();
   }
 
+  /**
+   * This strategy tries to find the bid which would be higher than average, but less than maximum
+   * X, which allow to be in better condition on the next move.
+   *
+   * @return Optional with bid. Optional.empty is not possible here.
+   */
   private Optional<Integer> counterAveragePriceBasedCondition() {
     int averagePrice = getAveragePrice();
     int optimisticUpBorder = getOptimisticUpBorder();

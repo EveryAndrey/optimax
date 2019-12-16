@@ -8,6 +8,9 @@ import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Template for bidders, taken part into {@link de.optimaxenergy.auction.auction.TwoPlayersAuction}
+ */
 @Getter
 public abstract class AbstractBidder implements Bidder {
 
@@ -31,6 +34,12 @@ public abstract class AbstractBidder implements Bidder {
     return new ArrayList<>(bidsHistory);
   }
 
+  /**
+   * Init the bidder.
+   *
+   * @param quantity - total quantity, that will be raffled at auction
+   * @param cash     - initial cash for participant
+   */
   @Override
   public void init(int quantity, int cash) {
     beforeInit();
@@ -41,9 +50,15 @@ public abstract class AbstractBidder implements Bidder {
     afterInit();
   }
 
+  /**
+   * You can override it child to process the init event
+   */
   protected void beforeInit() {
   }
 
+  /**
+   * You can override it child to process the init event
+   */
   protected void afterInit() {
   }
 
@@ -55,6 +70,10 @@ public abstract class AbstractBidder implements Bidder {
     this.currentStep = 0;
   }
 
+  /**
+   *
+   * @return next bid
+   */
   @Override
   public final int placeBid() {
     beforePlaceBid();
@@ -86,6 +105,11 @@ public abstract class AbstractBidder implements Bidder {
     this.conditions.add(condition);
   }
 
+  /**
+   *
+   * @param own - this player's bid
+   * @param other - opponent's bid
+   */
   @Override
   public void bids(int own, int other) {
     restCash -= own;

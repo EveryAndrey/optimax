@@ -5,6 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Strategy implementation based on reasonable price Reasonable price in this strategy equals Cash /
+ * (Quantities / 2 + 1)
+ */
 @SuppressWarnings("Duplicates")
 @Strategy(StrategyKind.AVERAGE_PRICE_BASED)
 public final class AveragePriceBasedBidder extends AbstractBidder {
@@ -38,13 +42,21 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
         : Math.floorDiv(getRestCash(), (winAmount - getAcquiredQuantity()));
   }
 
-
+  /**
+   * Check whether it appropriate to save money.
+   *
+   * @return Optional with the 0, if the strategy should be applied, Optional.empty - otherwise
+   */
   protected Optional<Integer> spareMoneyCondition() {
     return (getAcquiredQuantity() - getOpponentAcquiredQuantity() > 2 * MAX_PRIZE)
         ? Optional.of(0)
         : Optional.empty();
   }
 
+  /**
+   * Check whether could we loose any move or not.
+   * @return Optional with the double reasonable price if yes, Optional.empty - otherwise
+   */
   protected Optional<Integer> cantLooseCondition() {
 
     return getOpponentAcquiredQuantity() - getAcquiredQuantity() ==
@@ -53,12 +65,22 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
         : Optional.empty();
   }
 
+  /**
+   * Check whether should we bid all money.
+   * @return Optional with the rest cash if the strategy is reasonable to use,
+   * Optional.empty - otherwise
+   */
   protected Optional<Integer> allInCondition() {
     return isTheLastStep() && getAcquiredQuantity() - getOpponentAcquiredQuantity() <= 0
         ? Optional.of(getRestCash())
         : Optional.empty();
   }
 
+  /**
+   * Check whether the opponent bankrupt or saving money.
+   * @return Optional with the 1 if opponent bid 0 last N moves,
+   * Optional.empty - otherwise
+   */
   protected Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
     List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
         Collectors.toList());
@@ -75,6 +97,11 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
     return sum == 0 ? Optional.of(1) : Optional.empty();
   }
 
+  /**
+   * Check whether we should set reasonable price or it doesn't make sense.
+   * @return Optional with double reasonable price in case if we predict the win,
+   * Optional.empty - otherwise
+   */
   protected Optional<Integer> averagePriceBasedCondition() {
     List<Pair<Integer, Integer>> bidsHistory = getBidsHistory();
 
