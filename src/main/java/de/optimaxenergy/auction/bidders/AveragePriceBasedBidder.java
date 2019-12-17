@@ -20,10 +20,16 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
   private int winAmount = 0;
   private int reasonablePrice = 0;
 
+
   @Override
-  protected void afterInit() {
+  public void init(int quantity, int cash) {
+    super.init(quantity, cash);
     winAmount = getQuantity() / MAX_PRIZE + 1;
     computeReasonablePrice();
+  }
+
+  @Override
+  protected void fillConditions() {
     addCondition(this::spareMoneyCondition);
     addCondition(this::cantLooseCondition);
     addCondition(this::allInCondition);
@@ -47,7 +53,7 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
    *
    * @return Optional with the 0, if the strategy should be applied, Optional.empty - otherwise
    */
-  protected Optional<Integer> spareMoneyCondition() {
+  Optional<Integer> spareMoneyCondition() {
     return (getAcquiredQuantity() - getOpponentAcquiredQuantity() > 2 * MAX_PRIZE)
         ? Optional.of(0)
         : Optional.empty();
@@ -57,7 +63,7 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
    * Check whether could we loose any move or not.
    * @return Optional with the double reasonable price if yes, Optional.empty - otherwise
    */
-  protected Optional<Integer> cantLooseCondition() {
+  Optional<Integer> cantLooseCondition() {
 
     return getOpponentAcquiredQuantity() - getAcquiredQuantity() ==
         (getQuantity() / 2 - getCurrentStep()) * MAX_PRIZE
@@ -70,7 +76,7 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
    * @return Optional with the rest cash if the strategy is reasonable to use,
    * Optional.empty - otherwise
    */
-  protected Optional<Integer> allInCondition() {
+  Optional<Integer> allInCondition() {
     return isTheLastStep() && getAcquiredQuantity() - getOpponentAcquiredQuantity() <= 0
         ? Optional.of(getRestCash())
         : Optional.empty();
@@ -81,7 +87,7 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
    * @return Optional with the 1 if opponent bid 0 last N moves,
    * Optional.empty - otherwise
    */
-  protected Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
+  Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
     List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
         Collectors.toList());
     if (opponentBids.size() < zeroStrategyIdentify) {
@@ -102,7 +108,7 @@ public final class AveragePriceBasedBidder extends AbstractBidder {
    * @return Optional with double reasonable price in case if we predict the win,
    * Optional.empty - otherwise
    */
-  protected Optional<Integer> averagePriceBasedCondition() {
+  Optional<Integer> averagePriceBasedCondition() {
     List<Pair<Integer, Integer>> bidsHistory = getBidsHistory();
 
     if (bidsHistory.size() < SLIDING_PRICE_DEEP) {

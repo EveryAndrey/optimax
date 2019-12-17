@@ -33,11 +33,11 @@ public class AuctionConfig {
     this.validator = Validation.buildDefaultValidatorFactory().getValidator();
   }
 
-  public AuctionConfig init() {
+  public AuctionConfig init(String auctionFileName) {
     Yaml yaml = new Yaml(new Constructor(AuctionList.class));
     InputStream inputStream = this.getClass()
         .getClassLoader()
-        .getResourceAsStream("application.yml");
+        .getResourceAsStream(auctionFileName);
 
     AuctionList auctionList = yaml.load(inputStream);
     auctions.clear();

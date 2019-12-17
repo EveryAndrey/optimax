@@ -6,7 +6,8 @@ import de.optimaxenergy.auction.service.AuctionHolder;
 public class ApplicationService {
 
     public static void main(String[] args) throws InterruptedException {
-        AuctionHolder auctionHolder = new AuctionHolder((new AuctionConfig()).init().getAuctions());
+        AuctionHolder auctionHolder =
+            new AuctionHolder((new AuctionConfig()).init("application.yml").getAuctions());
         Thread auctionHolderThread = new Thread(auctionHolder::hold);
         auctionHolderThread.start();
         auctionHolderThread.join();
