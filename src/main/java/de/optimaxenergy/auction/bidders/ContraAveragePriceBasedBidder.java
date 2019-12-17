@@ -16,17 +16,21 @@ import org.apache.commons.lang3.tuple.Pair;
 @Strategy(CONTRA_AVERAGE_PRICE)
 public final class ContraAveragePriceBasedBidder extends AbstractBidder {
 
-  private static final int ZERO_STRATEGY_IDENTIFY = 2;
-  private static final double UPPER_AVERAGE_PRICE_COEFF = 0.2;
+  static final int ZERO_STRATEGY_IDENTIFY = 2;
+  static final double UPPER_AVERAGE_PRICE_COEFF = 0.2;
 
-  private int winAmount = 0;
+  int winAmount = 0;
 
   @Override
-  protected void afterInit() {
+  public void init(int quantity, int cash) {
+    super.init(quantity, cash);
     winAmount = getQuantity() / MAX_PRIZE + 1;
-    addCondition(() -> zeroCheckCondition(ZERO_STRATEGY_IDENTIFY));
-    addCondition(this::counterAveragePriceBasedCondition);
+  }
 
+  @Override
+  protected void fillConditions() {
+    addCondition(() -> zeroCheckCondition(ZERO_STRATEGY_IDENTIFY));
+    addCondition(this::contraAveragePriceBasedCondition);
   }
 
   /**
@@ -34,7 +38,7 @@ public final class ContraAveragePriceBasedBidder extends AbstractBidder {
    *
    * @return Optional with the 1 if opponent bid 0 last N moves, Optional.empty - otherwise
    */
-  private Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
+  Optional<Integer> zeroCheckCondition(int zeroStrategyIdentify) {
     List<Integer> opponentBids = getBidsHistory().stream().map(Pair::getRight).collect(
         Collectors.toList());
     if (opponentBids.size() < zeroStrategyIdentify) {
@@ -56,7 +60,7 @@ public final class ContraAveragePriceBasedBidder extends AbstractBidder {
    *
    * @return Optional with bid. Optional.empty is not possible here.
    */
-  private Optional<Integer> counterAveragePriceBasedCondition() {
+  Optional<Integer> contraAveragePriceBasedCondition() {
     int averagePrice = getAveragePrice();
     int optimisticUpBorder = getOptimisticUpBorder();
     int bidPrice = getBidPrice(averagePrice, optimisticUpBorder);

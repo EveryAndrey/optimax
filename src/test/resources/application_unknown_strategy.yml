@@ -1,0 +1,8 @@
+auctions:
+  - totalQuantity: 100
+    firstParticipant:
+      sum: 10000
+      strategy: AVERAGE_PRICE_BASED1
+    secondParticipant:
+      sum: 10000
+      strategy: CONTRA_AVERAGE_PRICE

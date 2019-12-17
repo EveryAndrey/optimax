@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
  */
 public class AuctionHolder {
 
+  private static Integer THREADS_NUM = 3;
   private final List<Auction> auctions;
 
   public AuctionHolder(List<Auction> auctions) {
@@ -26,7 +27,7 @@ public class AuctionHolder {
   public void hold() {
 
     List<Future<Auction>> futures = new ArrayList<>();
-    ExecutorService executorService = Executors.newFixedThreadPool(1);
+    ExecutorService executorService = Executors.newFixedThreadPool(THREADS_NUM);
 
     try {
       auctions.forEach(auction -> futures.add(executorService.submit(auction)));

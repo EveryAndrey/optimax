@@ -9,7 +9,7 @@ public class RandomBidder extends AbstractBidder {
   private static final float MIN_BOUND_PERCENT = 0.8f;
 
   @Override
-  protected void afterInit() {
+  protected void fillConditions() {
     addCondition(this::getBidCondition);
   }
 

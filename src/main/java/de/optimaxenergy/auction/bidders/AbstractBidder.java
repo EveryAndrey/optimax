@@ -42,25 +42,17 @@ public abstract class AbstractBidder implements Bidder {
    */
   @Override
   public void init(int quantity, int cash) {
-    beforeInit();
     this.quantity = quantity;
     this.cash = cash;
     this.restCash = cash;
     clearInternalAttributes();
-    afterInit();
+    fillConditions();
   }
 
   /**
    * You can override it child to process the init event
    */
-  protected void beforeInit() {
-  }
-
-  /**
-   * You can override it child to process the init event
-   */
-  protected void afterInit() {
-  }
+  protected abstract void fillConditions();
 
   private void clearInternalAttributes() {
     this.bidsHistory.clear();
